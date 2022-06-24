@@ -47,7 +47,6 @@ class CounterBloc extends Bloc<CounterEvent, CounterState> {
 
     yield WeatherLoading();
     final data = await WeatherService.fetchWeather(position!);
-    print('data: $data');
 
     if (data != null) {
       yield WeatherLoaded(data);

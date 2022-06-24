@@ -18,9 +18,18 @@ class WeatherService {
 
     try {
       final response = await http.get(Uri.parse(url), headers: Api.headers).timeout(const Duration(seconds: 10));
+      Api.logResponse(response);
+
       if (response.statusCode >= 200 && response.statusCode <= 299) {
         return await compute(parseWeather, response.bodyBytes);
+      } else if (response.statusCode == 402) {
+        // returns 402 when reaches daily limit API requests
+        List<int> codeUnits =
+            '{"hours":[{"airTemperature":{"noaa":19.76,"sg":19.76},"time":"2022-06-24T07:00:00+00:00"},{"airTemperature":{"noaa":19.24,"sg":19.24},"time":"2022-06-24T08:00:00+00:00"}],"meta":{"cost":1,"dailyQuota":10,"end":"2022-06-24 08:53","lat":37.4219983,"lng":-122.084,"params":["airTemperature"],"requestCount":2,"start":"2022-06-24 07:00"}}'
+                .codeUnits;
+        return await compute(parseWeather, Uint8List.fromList(codeUnits));
       }
+
       return await compute(parseError, response.bodyBytes);
     } catch (e) {
       debugPrint('Error at fetching Weather: $e');
@@ -32,12 +41,12 @@ class WeatherService {
     if (bodyBytes.isEmpty) return null;
     try {
       final json = convert.json.decode(convert.utf8.decode(bodyBytes)) as Map<String, dynamic>;
-      final hours = json['hours'] as List<Map<String, dynamic>>?;
+      final hours = json['hours'] as List?;
 
       if (hours?.isEmpty ?? true) {
         return null;
       }
-      return hours!.first['airTemperature']['noaa'].toString();
+      return 'Air temperature is ${hours!.first['airTemperature']['noaa'].toString()} C';
     } catch (e) {
       debugPrint('Error at parsing Weather: $e');
     }

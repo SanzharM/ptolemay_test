@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
       create: (context) => ThemeBloc(),
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {
-          print('MaterialAPP state is $state');
           return MaterialApp(
             title: 'Flutter Demo',
             theme: state.themeMode == ThemeMode.dark ? AppTheme.darkTheme : AppTheme.lightTheme,

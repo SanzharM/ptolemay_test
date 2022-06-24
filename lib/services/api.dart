@@ -1,11 +1,23 @@
+import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart';
+
 class Api {
   static const baseUrl = 'https://api.stormglass.io';
-  static const headers = {'Authorization': '3306d47e-f37d-11ec-9e5f-0242ac130002-3306d4ec-f37d-11ec-9e5f-0242ac130002'};
+  static const _apiKey = '16195dae-f392-11ec-91f7-0242ac130002-16195e1c-f392-11ec-91f7-0242ac130002';
+  static const headers = {'Authorization': _apiKey};
 
   static String urlWithParams(String url, Map<String, String>? queryParams) {
     if (queryParams == null) return url;
     queryParams.forEach((key, value) => url = url.replaceAll(key, value));
     return url;
+  }
+
+  static void logResponse(Response response) {
+    debugPrint('\n-------------');
+    debugPrint('Url: ${response.request?.url}');
+    debugPrint('Headers: ${response.headers}');
+    debugPrint('Status code: ${response.statusCode}');
+    debugPrint('Body: ${response.body}');
   }
 }
 
